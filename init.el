@@ -1,7 +1,3 @@
-;; -*- coding: utf-8; lexical-binding: t; -*-
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-;; Bootstrap configuration for straight.el
 (setq straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -28,46 +24,18 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(when (file-exists-p "~/.emacs.d/init-user.el")
-  (setq user-custom-file "~/.emacs.d/init-user.el")
-  (load user-custom-file))
+(defvar files '("init-user.el"
+                "custom.el"
+                "org.el"
+                "config.el"
+                "clojure.el"
+                "haskell.el"
+                "rust.el"
+                "ruby.el"
+                "purs.el"
+                "python.el"
+                "go.el"))
 
-(when (file-exists-p "~/.emacs.d/custom.el")
-  (setq user-custom-file "~/.emacs.d/custom.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/org.el")
-  (setq user-custom-file "~/.emacs.d/org.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/config.el")
-  (setq user-custom-file "~/.emacs.d/config.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/clojure.el")
-  (setq user-custom-file "~/.emacs.d/clojure.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/haskell.el")
-  (setq user-custom-file "~/.emacs.d/haskell.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/rust.el")
-  (setq user-custom-file "~/.emacs.d/rust.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/ruby.el")
-  (setq user-custom-file "~/.emacs.d/ruby.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/purs.el")
-  (setq user-custom-file "~/.emacs.d/purs.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/python.el")
-  (setq user-custom-file "~/.emacs.d/python.el")
-  (load user-custom-file))
-
-(when (file-exists-p "~/.emacs.d/go.el")
-  (setq user-custom-file "~/.emacs.d/go.el")
-  (load user-custom-file))
+(dolist (file files)
+  (when (file-exists-p (concat "~/.emacs.d/" file))
+    (load-file (concat "~/.emacs.d/" file))))
