@@ -6,6 +6,7 @@
 
 ;; Automatically reload files when they change on disk
 (global-auto-revert-mode 1)
+(setq auto-revert-check-vc-info t)
 (setq auto-revert-verbose nil)
 
 ;;
