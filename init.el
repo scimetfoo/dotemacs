@@ -27,7 +27,7 @@
 (defvar files '("init-user.el"
                 "custom.el"
                 "org.el"
-                "config.el"
+                "common.el"
                 "clojure.el"
                 "haskell.el"
                 "rust.el"
