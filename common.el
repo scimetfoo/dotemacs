@@ -9,9 +9,8 @@
 (setq auto-revert-check-vc-info t)
 (setq auto-revert-verbose nil)
 
-;;
-;; APPEARANCE
-;;
+;; prevent splits from being opened
+(setq pop-up-windows nil)
 
 ;; don't show the tool bar
 (tool-bar-mode -1)
