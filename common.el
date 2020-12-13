@@ -1,5 +1,5 @@
 ;; Reduce the frequency of garbage collection by making it happen on
-;; ~100MB of allocated data, lower it to the ddefault after init.
+;; ~100MB of allocated data, lower it to the default after init.
 
 (setq gc-cons-threshold 100000000)
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
@@ -66,7 +66,7 @@
 
 ;; Use Cmd for movement
 (global-set-key (kbd "s-<right>") (kbd "C-e"))  ;; End of line
-(global-set-key (kbd "s-<left>") (kbd "C-a"))   ;; Beginning of line
+(global-set-key (kbd "s-<left>") (kbd "M-m"))   ;; Beginning of line
 
 ;; Kills the current buffer without displaying the menu.
 ;; A confirmation will be asked for, if the buffer has been modified

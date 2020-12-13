@@ -8,6 +8,8 @@
 (define-clojure-indent
   (defrecord 1))
 
+;; (load "cider-autoloads" t t)
+;; (add-to-list 'load-path "/Users/murtaza/Dev/cider") ;; load the local instance of cider (for when fiddling with cider)
 (use-package cider
   :init
   (setq cider-repl-pop-to-buffer-on-connect t
@@ -39,7 +41,6 @@
             (lambda ()
               (local-set-key (kbd "<C-return>") 'cider-eval-last-sexp)
               (local-set-key (kbd "C-c C-n") 'cider-eval-buffer))))
-
 
 (use-package clj-refactor
   :config
