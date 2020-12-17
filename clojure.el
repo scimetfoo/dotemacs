@@ -1,3 +1,6 @@
+(use-package flycheck-clj-kondo
+  :ensure t)
+
 (use-package clojure-mode
   :ensure t
   :config
@@ -59,19 +62,10 @@
 (require 'cider)
 (setq org-babel-clojure-backend 'cider)
 
-(use-package flycheck-clj-kondo
-  :config
-  (remove-hook 'clojure-mode-hook
-               (lambda ()
-                 (require 'flycheck-clj-kondo))))
-
 (use-package aggressive-indent
   :commands (aggressive-indent-mode)
   :config
   (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
-
-(use-package flycheck-clj-kondo
-  :ensure t)
 
 (defvar clojure-mode-with-hyphens-as-word-sep-syntax-table
   (let ((st (make-syntax-table clojure-mode-syntax-table)))
