@@ -4,6 +4,8 @@
 (setq gc-cons-threshold 100000000)
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
+(setq auto-window-vscroll nil)
+
 ;; Automatically reload files when they change on disk
 (global-auto-revert-mode 1)
 (setq auto-revert-check-vc-info t)
@@ -36,7 +38,7 @@
             "%b"))))
 
 ;; Set font and line spacing
-(set-frame-font "Menlo 13" nil t)
+(set-frame-font "Menlo 15" nil t)
 (set-face-attribute 'default nil
                     :font  "Menlo")
 

@@ -29,55 +29,10 @@
 ;; Rewrite selected text
 (delete-selection-mode 1)
 
-(setq org-todo-keywords
-      '((sequence "TODO" "DOING" "|" "DONE")))
-
-;; Replace scratch buffer with contents of file if it exists
-(let ((filename "~/.emacs.d/plan-the-day.org"))
-  (when (file-exists-p filename)
-    (setq initial-buffer-choice filename)))
-
-;; ======
-;; THEMES
-;; ======
-
 (use-package zenburn-theme
   :ensure t)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'zenburn)))
-
-(use-package monokai-pro-theme :disabled t)
-(use-package moe-theme
-  :disabled t
-  :config
-  (setq moe-theme-highlight-buffer-id t
-        show-paren-style 'parenthesis)
-  (moe-theme-set-color 'blue)
-  (moe-dark))
-(use-package srcery-theme :disabled t)
-(use-package nord-theme :disabled t)
-(use-package darkokai-theme
-  :disabled t
-  :config
-  (setq darkokai-mode-line-padding 1))
-(use-package doom-themes
-  :disabled t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t))
-(use-package abyss-theme :disabled t)
-(use-package gruvbox-theme :disabled t)
-(use-package github-theme :disabled t)
-(use-package dracula-theme
-  :disabled t
-  :config)
-(use-package bubbleberry-theme
-  :disabled t
-  :config)
-
-;; ==========================
-;; OTHER THIRD PARTY PACKAGES
-;; ==========================
 
 (use-package expand-region
   :config (global-set-key (kbd "C-;") 'er/expand-region))
@@ -106,9 +61,11 @@
   ;;   (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
   )
 
-(use-package wgrep)
+(use-package wgrep
+  :ensure t)
 
 (use-package rg
+  :ensure t
   :config
   (setq rg-command-line-flags '("-w"))
   (setq rg-ignore-case 'smart)
@@ -125,6 +82,7 @@
     :flags ("--hidden -g !.git")))
 
 (use-package counsel
+  :ensure t
   :after rg
   :config
   ;; (global-set-key (kbd "s-g") 'counsel-rg)
@@ -198,16 +156,6 @@
   :config
   (counsel-projectile-mode))
 
-(use-package fast-scroll
-  :config
-  (fast-scroll-config)
-  (fast-scroll-mode 1))
-
-(use-package smooth-scrolling
-  :config
-  (smooth-scrolling-mode 1)
-  (setq smooth-scroll-margin 5))
-
 (use-package web-mode
   :mode (("\\.html?\\'" . web-mode)
          ("\\.css\\'"   . web-mode)
@@ -245,8 +193,6 @@
 
 (use-package speed-type
   :ensure t)
-
-(require 'speed-type)
 
 ;; M-x with recently/frequently used commands
 (use-package smex
@@ -314,10 +260,6 @@
   (add-hook 'cider-repl-mode-hook 'enable-paredit-mode)
   (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode))
 
-;; add colors to the parens
-(use-package rainbow-delimiters
-  :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
 (use-package projectile
   :bind (:map projectile-mode-map
               ("s-p" . projectile-command-map))
@@ -351,23 +293,3 @@
 (use-package kubernetes-evil
   :ensure t
   :after kubernetes)
-
-;; ==============
-;;    EFUNS
-;; ==============
-(when (file-exists-p "~/.emacs.d/init-efuns.el")
-  (setq user-custom-file "~/.emacs.d/init-efuns.el")
-  (load user-custom-file))
-
-;; ==================
-;; GLOBAL KEYBINDINGS
-;; ==================
-
-(global-set-key (kbd "s-l") 'goto-line)
-(global-set-key (kbd "s-t") 'projectile-find-file)
-(global-set-key (kbd "M-j") (lambda () (interactive) (join-line -1)))
-(global-set-key (kbd "s-{") 'previous-buffer)
-(global-set-key (kbd "s-}") 'next-buffer)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-c C-l") 'org-capture)
-(global-set-key (kbd "s-w") 'kill-this-buffer)
