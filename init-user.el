@@ -19,8 +19,6 @@
       buffer-file-coding-system 'utf-8
       org-ellipsis " ▶")
 
-;; (set-default 'cursor-type '(bar . 2))
-;;(set-default 'cursor-type 'box)
 (blink-cursor-mode 0)
 
 (global-hl-line-mode nil)
@@ -165,9 +163,6 @@
   (setq web-mode-code-indent-offset 2)
   (setq web-mode-css-indent-offset 2))
 
-(use-package k8s-mode
-  :hook (k8s-mode . yas-minor-mode))
-
 (use-package protobuf-mode
   :hook (protobuf-mode . flycheck-mode))
 
@@ -181,20 +176,12 @@
   :init
   (golden-ratio-mode 1))
 
-(use-package dired-sidebar
-  :commands (dired-sidebar-toggle-sidebar)
-  :config
-  (setq dired-sidebar-theme 'icons)
-  (setq dired-sidebar-use-custom-font t)
-  (setq dired-sidebar-face '(:family "Helvetica" :height 110)))
-
 (use-package auto-yasnippet
   :ensure t)
 
 (use-package speed-type
   :ensure t)
 
-;; M-x with recently/frequently used commands
 (use-package smex
   :config
   (global-set-key (kbd "M-x") 'smex))
@@ -206,7 +193,6 @@
   :ensure t
   :bind ("C-c SPC" . format-all-buffer))
 
-;; autocomplete
 (use-package company
   :bind (("C-p" . company-select-previous)
          ("C-n" . company-select-next))
