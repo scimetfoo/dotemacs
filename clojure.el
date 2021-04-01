@@ -11,27 +11,9 @@
 (define-clojure-indent
   (defrecord 1))
 
+;; (add-to-list 'load-path "/Users/murtaza/dev/cider") ;; load the local instance of cider (for when fiddling with cider)
 ;; (load "cider-autoloads" t t)
-;; (add-to-list 'load-path "/Users/murtaza/Dev/cider") ;; load the local instance of cider (for when fiddling with cider)
 (use-package cider
-  :init
-  (setq cider-repl-pop-to-buffer-on-connect t
-        cider-show-error-buffer t
-        cider-auto-select-error-buffer t
-        cider-repl-history-file "~/.emacs.d/cider-history"
-        cider-repl-wrap-history t
-        cider-repl-history-size 100
-        cider-repl-use-clojure-font-lock t
-        cider-docview-fill-column 70
-        cider-stacktrace-fill-column 76
-        nrepl-popup-stacktraces nil
-        nrepl-log-messages nil
-        nrepl-hide-special-buffers t
-        cider-repl-use-pretty-printing t
-        cider-repl-result-prefix ";; => "
-        cider-repl-display-help-banner nil
-        cider-font-lock-dynamically '(macro core function var))
-
   :config
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode)
@@ -39,11 +21,7 @@
   (add-hook 'cider-repl-mode-hook
             (lambda ()
               (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
-  (add-hook 'cider-mode-hook #'company-mode)
-  (add-hook 'cider-mode-hook
-            (lambda ()
-              (local-set-key (kbd "<C-return>") 'cider-eval-last-sexp)
-              (local-set-key (kbd "C-c C-n") 'cider-eval-buffer))))
+  (add-hook 'cider-mode-hook #'company-mode))
 
 (use-package clj-refactor
   :config
@@ -51,8 +29,7 @@
   (add-hook 'clojure-mode-hook
             (lambda ()
               (clj-refactor-mode 1)
-              (yas-minor-mode 1) ; for adding require/use/import statements
-              ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+              (yas-minor-mode 1)
               (cljr-add-keybindings-with-prefix "C-c C-m"))))
 
 (require 'ob-clojure)

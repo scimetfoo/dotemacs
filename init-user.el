@@ -39,8 +39,7 @@
   :config
   (ido-vertical-mode 1)
   (setq ido-use-faces t
-        ido-vertical-show-count t
-        ido-vertical-define-keys 'C-n-and-C-p-only))
+        ido-vertical-show-count t))
 
 (use-package ivy
   :bind ("s-b". 'ivy-switch-buffer)
@@ -194,8 +193,7 @@
   :bind ("C-c SPC" . format-all-buffer))
 
 (use-package company
-  :bind (("C-p" . company-select-previous)
-         ("C-n" . company-select-next))
+  :ensure t
   :init
   (add-hook 'prog-mode-hook 'company-mode)
   :config

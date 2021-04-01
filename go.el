@@ -20,26 +20,23 @@
   :ensure t
   :config
   ;; Optionally enable completion-as-you-type behavior.
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1))
+  (setq company-idle-delay 1)
+  (setq company-minimum-prefix-length 0))
 
-;; Optional - provides snippet support.
-(use-package yasnippet
-  :ensure t
-  :commands yas-minor-mode
-  :hook (go-mode . yas-minor-mode))
+(use-package golint
+  :ensure t)
 
 
 (defun custom-go-mode ()
   (display-line-numbers-mode 1))
 
 (use-package go-mode
-:defer t
-:ensure t
-:mode ("\\.go\\'" . go-mode)
-:ensure-system-package
+  :defer t
+  :ensure t
+  :mode ("\\.go\\'" . go-mode)
+  :ensure-system-package
   ((gopls . "go get -u golang.org/x/tools/gopls@latest"))
-:init
+  :init
   (setq compile-command "echo Building... && go build -v && echo Testing... && go test -v && echo Linter... && golint")
   (setq compilation-read-command nil)
   (add-hook 'go-mode-hook 'custom-go-mode))

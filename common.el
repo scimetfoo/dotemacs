@@ -1,8 +1,8 @@
 ;; Reduce the frequency of garbage collection by making it happen on
 ;; ~100MB of allocated data, lower it to the default after init.
 
-(setq gc-cons-threshold 100000000)
-(add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
+(setq gc-cons-threshold 50000000
+      gc-cons-percentage 0.6)
 
 (setq auto-window-vscroll nil)
 
