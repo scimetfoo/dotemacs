@@ -1,10 +1,9 @@
-(use-package flycheck-clj-kondo
-  :ensure t)
 
 (use-package clojure-mode
   :ensure t
-  :config
-  (require 'flycheck-clj-kondo))
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)))
 
 (use-package clojure-mode-extra-font-locking)
 
@@ -14,23 +13,21 @@
 ;; (add-to-list 'load-path "/Users/murtaza/dev/cider") ;; load the local instance of cider (for when fiddling with cider)
 ;; (load "cider-autoloads" t t)
 (use-package cider
-  :config
-  (add-hook 'cider-mode-hook #'eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode)
-  (add-hook 'cider-repl-mode-hook #'company-mode)
-  (add-hook 'cider-repl-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
-  (add-hook 'cider-mode-hook #'company-mode))
+  :hook ((cider-mode . eldoc-mode)
+         (cider-repl-mode . paredit-mode)
+         (cider-repl-mode . company-mode)
+         (cider-repl-mode . (lambda ()
+                              (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
+         (cider-mode . company-mode)))
 
 (use-package clj-refactor
   :config
   (setq cljr-warn-on-eval nil)
-  (add-hook 'clojure-mode-hook
-            (lambda ()
-              (clj-refactor-mode 1)
-              (yas-minor-mode 1)
-              (cljr-add-keybindings-with-prefix "C-c C-m"))))
+  :hook
+  (clojure-mode . (lambda ()
+                    (clj-refactor-mode 1)
+                    (yas-minor-mode 1)
+                    (cljr-add-keybindings-with-prefix "C-c C-m"))))
 
 (require 'ob-clojure)
 (org-babel-do-load-languages
@@ -41,8 +38,7 @@
 
 (use-package aggressive-indent
   :commands (aggressive-indent-mode)
-  :config
-  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
+  :hook (clojure-mode . aggressive-indent-mode))
 
 (defvar clojure-mode-with-hyphens-as-word-sep-syntax-table
   (let ((st (make-syntax-table clojure-mode-syntax-table)))

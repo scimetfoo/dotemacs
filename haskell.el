@@ -5,29 +5,30 @@
   :ensure t
   :mode (("\\.hs\\'"    . haskell-mode))
   :interpreter ("haskell" . haskell-mode)
-
-  :init
-  (add-hook 'haskell-mode-hook #'hindent-mode)
-  (add-hook 'haskell-mode-hook (lambda () (yas-minor-mode)))
-
   :config
   (require 'haskell)
-  (require 'hindent)
+  ;; (require 'hindent)
   (require 'haskell-mode)
   (require 'haskell-interactive-mode)
   (require 'autoinsert)
   (setq haskell-compile-cabal-build-command "stack build")
   (setq haskell-process-log t)
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'haskell-mode-setup)
-  (define-key hindent-mode-map (kbd "C-c SPC") 'hindent-reformat-buffer)
+  ;; (define-key hindent-mode-map (kbd "C-c SPC") 'hindent-reformat-buffer)
   (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
   (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
   (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
   (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
   (define-key haskell-mode-map (kbd "C-c C-b") 'haskell-interactive-switch)
   (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
-  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info))
+  (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+  :hook ((haskell-mode . lsp-deferred)
+         (haskell-mode . interactive-haskell-mode)
+         (haskell-mode . haskell-mode-setup)
+         (haskell-mode . hindent-mode)
+         (haskell-mode- . (lambda () (yas-minor-mode)))))
+
+(use-package lsp-haskell
+  :ensure t)
 
 (use-package dante
   :ensure t

@@ -175,6 +175,16 @@
   :init
   (golden-ratio-mode 1))
 
+(use-package  yasnippet-snippets
+  :ensure t)
+
+(use-package yasnippet
+  :demand t
+  :config
+  (setq yas-verbosity 1 yas-wrap-around-region t)
+  (yas-reload-all )
+  (yas-global-mode 1))
+
 (use-package auto-yasnippet
   :ensure t)
 
