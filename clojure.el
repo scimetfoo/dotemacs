@@ -10,7 +10,7 @@
 (define-clojure-indent
   (defrecord 1))
 
-;; (add-to-list 'load-path "/Users/murtaza/dev/cider") ;; load the local instance of cider (for when fiddling with cider)
+;; (add-to-list 'load-path "/Users/murtaza/dev/cider") ;; load the local instance of cider
 ;; (load "cider-autoloads" t t)
 (use-package cider
   :hook ((cider-mode . eldoc-mode)

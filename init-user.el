@@ -61,22 +61,15 @@
 (use-package wgrep
   :ensure t)
 
+(use-package esup
+  :ensure t
+  :config   (setq esup-depth 0))
+
 (use-package rg
   :ensure t
   :config
   (setq rg-command-line-flags '("-w"))
-  (setq rg-ignore-case 'smart)
-
-  (rg-define-search kg/grep-vc-or-dir
-    :query ask
-    :format regexp
-    :files "everything"
-    :dir (let ((vc (vc-root-dir)))
-           (if vc
-               vc                         ; search root project dir
-             default-directory))          ; or from the current dir
-    :confirm prefix
-    :flags ("--hidden -g !.git")))
+  (setq rg-ignore-case 'smart))
 
 (use-package counsel
   :ensure t
@@ -182,7 +175,7 @@
   :demand t
   :config
   (setq yas-verbosity 1 yas-wrap-around-region t)
-  (yas-reload-all )
+  (yas-reload-all)
   (yas-global-mode 1))
 
 (use-package auto-yasnippet
@@ -194,9 +187,6 @@
 (use-package smex
   :config
   (global-set-key (kbd "M-x") 'smex))
-
-(use-package helm-projectile
-  :ensure t)
 
 (use-package format-all
   :ensure t
@@ -218,11 +208,7 @@
   (setq company-tooltip-flip-when-above nil)
   (setq company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
-  ;; weight by frequency
   (setq company-transformers '(company-sort-by-occurrence)))
-
-(use-package use-package-ensure-system-package
-  :ensure t)
 
 (use-package which-key
   :init

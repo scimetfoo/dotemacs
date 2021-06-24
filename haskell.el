@@ -44,5 +44,4 @@
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint)))
 
-(add-to-list 'load-path "./elisp")
 ;;(require 'shm)
