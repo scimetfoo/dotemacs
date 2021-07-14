@@ -36,8 +36,9 @@
                 "python.el"
                 "go.el"
                 "java.el"
-                "common.el"
-                "tex.el"))
+                "tex.el"
+                "kotlin.el"
+                "common.el"))
 
 (dolist (file files)
   (when (file-exists-p (concat "~/.emacs.d/" file))
