@@ -1,3 +1,14 @@
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :config (setenv "PATH" (concat
+                          "/usr/local/bin" path-separator
+                          (getenv "PATH")))
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+    (add-to-list 'lsp-language-id-configuration `(,m . "clojure"))))
 
 (use-package clojure-mode
   :ensure t

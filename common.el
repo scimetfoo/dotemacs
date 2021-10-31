@@ -19,7 +19,7 @@
 
 ;; don't show the scroll bar
 (scroll-bar-mode -1)
-
+(setq scroll-conservatively 10000)
 ;; Make the title bar blend with the background color
 ;; Set the appearance to light/dark depending on the theme
 (add-to-list 'default-frame-alist
@@ -86,18 +86,6 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (setq ns-pop-up-frames nil)
-
-(use-package lsp-mode
-  :ensure t
-  :commands (lsp lsp-deferred)
-  :config (setenv "PATH" (concat
-                          "/usr/local/bin" path-separator
-                          (getenv "PATH")))
-  (dolist (m '(clojure-mode
-               clojurec-mode
-               clojurescript-mode
-               clojurex-mode))
-    (add-to-list 'lsp-language-id-configuration `(,m . "clojure"))))
 
 (use-package lsp-ui
   :ensure t

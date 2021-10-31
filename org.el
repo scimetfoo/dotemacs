@@ -11,7 +11,8 @@
             (add-hook 'org-shiftup-final-hook 'windmove-up)
             (add-hook 'org-shiftleft-final-hook 'windmove-left)
             (add-hook 'org-shiftdown-final-hook 'windmove-down)
-            (add-hook 'org-shiftright-final-hook 'windmove-right))
+            (add-hook 'org-shiftright-final-hook 'windmove-right)
+            (setq org-startup-with-inline-images t))
   :init (progn
           (add-hook 'org-mode-hook 'inhibit-global-linum-mode)
           (add-hook 'org-mode-hook 'flyspell-mode)
@@ -21,6 +22,13 @@
 (use-package org-bullets
   :ensure t
   :config (setq org-bullets-bullet-list '("◉" "⌘" "○" "⌗")))
+
+(use-package org-tree-slide
+  :custom
+  (org-image-actual-width nil))
+
+(use-package ox-reveal
+  :ensure t)
 
 (require 'ob)
 (require 'ob-tangle)
