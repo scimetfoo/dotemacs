@@ -2,7 +2,3 @@
 
 !.gitignore
 !*.el
-!README.md
-
-.mc-lists.el
-.secrets
