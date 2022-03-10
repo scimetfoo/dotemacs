@@ -150,10 +150,10 @@
 ;; Rewrite selected text
 (delete-selection-mode 1)
 
-(use-package zenburn-theme
-  :ensure t)
-
-(add-hook 'after-init-hook (lambda () (load-theme 'zenburn)))
+(use-package base16-theme
+  :ensure t
+  :config
+  (load-theme 'base16-default-dark t))
 
 (use-package expand-region
   :config (global-set-key (kbd "C-;") 'er/expand-region))
@@ -658,3 +658,17 @@
   (setq
    pipenv-projectile-after-switch-function
    #'pipenv-projectile-after-switch-extended))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("ea5822c1b2fb8bb6194a7ee61af3fe2cc7e2c7bab272cbb498a0234984e1b2d9" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
