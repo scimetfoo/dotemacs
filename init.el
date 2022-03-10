@@ -153,7 +153,7 @@
 (use-package base16-theme
   :ensure t
   :config
-  (load-theme 'base16-default-dark t))
+  (load-theme 'base16-gruvbox-dark-hard t))
 
 (use-package expand-region
   :config (global-set-key (kbd "C-;") 'er/expand-region))
