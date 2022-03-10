@@ -70,14 +70,7 @@
               (abbreviate-file-name (buffer-file-name))
             "%b"))))
 
-;; Set font and line spacing
-(set-frame-font "Menlo 15" nil t)
-(set-face-attribute 'default nil
-                    :font  "Menlo")
-
 ;; Line numbers
-;; Add padding to line numbers
-(setq linum-format "%5d ")
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;; Use y/n instead of full yes/no for confirmation messages
@@ -208,15 +201,6 @@
   :config
   (global-set-key (kbd "s-f") 'swiper))
 
-(use-package multiple-cursors
-  :config
-  (setq-default mc/edit-lines-empty-lines 'ignore
-                mc/insert-numbers-default 1)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this))
-
-(use-package all-the-icons)
-
 (use-package doom-modeline
   :hook (after-init . doom-modeline-init)
   :init
@@ -258,9 +242,6 @@
   :init
   (add-hook 'markdown-mode-hook 'smartparens-mode))
 
-(use-package hl-todo
-  :config
-  (global-hl-todo-mode t))
 
 (use-package yaml-mode)
 (use-package json-mode)
