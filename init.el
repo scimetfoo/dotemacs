@@ -516,7 +516,9 @@
   :ensure t
   :hook ((kotlin-mode . lsp-deferred)
          (kotlin-mode . flycheck-mode)
-         (kotlin-mode . company-mode)))
+         (kotlin-mode . company-mode)
+         (kotlin-mode . (lambda ()
+                          (local-unset-key (kbd "s-l"))))))
 
 ;; Lang: Tex
 (use-package tex-mode
@@ -618,6 +620,12 @@
             (turn-on-purescript-indentation)))
 
 ;; Lang: Python
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
+
 (use-package elpy
   :ensure t
   :init
