@@ -1,0 +1,551 @@
+* initialisation
+#+begin_src emacs-lisp
+;; garbage collection settings
+(setq gc-cons-threshold (* 50 1000 1000)  ;; 50MB during init
+      gc-cons-percentage 0.6
+      auto-window-vscroll nil
+      inhibit-compacting-font-caches t
+      read-process-output-max (* 1024 1024)) ;; 1mb
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 2 1000 1000)))) ;; 2MB post init
+
+;; package system setup
+(setq straight-use-package-by-default t)
+#+end_src
+
+* package management
+#+begin_src emacs-lisp
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+(require 'use-package)
+
+(use-package system-packages
+  :straight t)
+#+end_src
+
+* UI
+
+#+begin_src emacs-lisp
+
+  ;; macos specific settings
+  (when (eq system-type 'darwin)
+    (setq mac-option-key-is-meta nil
+    mac-command-key-is-meta t
+    mac-command-modifier 'super
+    mac-option-modifier 'meta
+    ns-use-native-fullscreen t)
+
+    ;; title bar settings
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+    ;; keybindings
+    (global-set-key (kbd "s-<right>") (kbd "C-e"))
+    (global-set-key (kbd "s-<left>") (kbd "M-m"))
+    (global-set-key (kbd "s-<backspace>") 'kill-whole-line))
+    ;; shell environment
+    (use-package exec-path-from-shell
+      :straight t
+      :if (memq window-system '(mac ns))
+      :config
+      (setq exec-path-from-shell-check-startup-files nil)
+      (exec-path-from-shell-initialize))
+
+    ;; theme
+    (use-package base16-theme
+      :straight t
+      :config
+      (load-theme 'base16-gruvbox-dark-hard t))
+
+    ;; modeline
+    (use-package doom-modeline
+      :straight t
+      :hook (after-init . doom-modeline-mode)
+      :init
+      (set-face-attribute 'mode-line nil :height 130)
+      (set-face-attribute 'mode-line-inactive nil :height 130)
+      :config
+      (setq doom-modeline-buffer-file-name-style 'relative-from-project
+      doom-modeline-icon (display-graphic-p)
+      doom-modeline-major-mode-color-icon t
+      doom-modeline-major-mode-icon t
+      doom-modeline-minor-modes nil
+      doom-modeline-github nil
+      doom-modeline-version nil
+      doom-modeline-height 10
+      doom-modeline-bar-width 1
+      doom-modeline-buffer-encoding nil
+      doom-modeline-vcs-max-length 50
+      doom-modeline-window-width-limit fill-column))
+
+    ;; window sizing
+    (use-package golden-ratio
+      :straight t
+      :diminish golden-ratio-mode
+      :init
+      (golden-ratio-mode 1))
+
+    ;; command completion
+    (use-package which-key
+      :straight t
+      :init
+      (which-key-mode)
+      :config
+      (setq which-key-sort-order 'which-key-key-order-alpha
+      which-key-side-window-max-width 0.33
+      which-key-idle-delay 1.0)
+      :diminish which-key-mode)
+
+    ;; Region expansion
+    (use-package expand-region
+      :straight t
+      :config
+      (global-set-key (kbd "C-;") 'er/expand-region))
+
+  ;; utf-8 everywhere
+    (prefer-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+
+    ;; basic UI settings
+    (setq-default
+     inhibit-startup-screen t
+     initial-scratch-message nil
+     sentence-end-double-space nil
+     frame-title-format '((:eval (if (buffer-file-name)
+                                     (abbreviate-file-name (buffer-file-name))
+                                   "%b")))
+     indent-tabs-mode nil
+     tab-width 2)
+
+  ;; UI elements
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (blink-cursor-mode -1)
+
+  ;; title bar appearance for macos
+  (when (eq system-type 'darwin)
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark)))
+
+  ;; shift between buffers using shift+arrow keys.
+  (when (fboundp 'windmove-default-keybindings)
+    (windmove-default-keybindings))
+#+end_src
+
+* dev tools
+
+#+begin_src emacs-lisp
+;; project management
+(use-package projectile
+  :straight t
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map))
+  :init
+  (setq-default projectile-cache-file
+                (expand-file-name ".projectile-cache" user-emacs-directory))
+  (add-hook 'prog-mode-hook #'projectile-mode)
+  :config
+  (projectile-mode)
+  (setq projectile-completion-system 'ivy)
+  (setq-default projectile-enable-caching t
+                projectile-mode-line-prefix ""
+                projectile-sort-order 'recentf
+                projectile-mode-line '(:eval (projectile-project-name))))
+
+;; version control
+(use-package magit
+  :straight t
+  :bind ("C-x g" . magit-status)
+  :config
+  (setq magit-set-upstream-on-push 'askifnotset))
+
+;; completion framework
+(use-package company
+  :straight t
+  :hook (prog-mode . company-mode)
+  :config
+  (global-company-mode)
+  (setq company-tooltip-limit 10
+        company-idle-delay 0
+        company-echo-delay 0
+        company-minimum-prefix-length 2
+        company-require-match nil
+        company-selection-wrap-around t
+        company-tooltip-align-annotations t
+        company-tooltip-flip-when-above nil
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil
+        company-transformers '(company-sort-by-occurrence)))
+
+;; lsp support
+(use-package lsp-mode
+  :straight t
+  :commands lsp
+  :hook ((clojure-mode . lsp-deferred)
+         (go-mode . lsp-deferred)
+         (python-mode . lsp-deferred)
+         (rust-mode . lsp-deferred)
+         (java-mode . lsp-deferred))
+  :config
+  (setq lsp-idle-delay 0.500
+        lsp-enable-symbol-highlighting nil
+        lsp-headerline-breadcrumb-enable nil
+        lsp-modeline-code-actions-enable nil
+        lsp-modeline-diagnostics-enable nil
+        lsp-completion-provider :capf))
+
+(use-package lsp-ui
+  :straight t
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-enable nil)
+  (lsp-ui-sideline-enable nil))
+
+;; parens
+(use-package smartparens
+  :straight t
+  :hook ((prog-mode markdown-mode) . smartparens-mode))
+
+(use-package paredit
+  :straight t
+  :hook ((clojure-mode . enable-paredit-mode)
+         (cider-repl-mode . enable-paredit-mode)
+         (emacs-lisp-mode . enable-paredit-mode)))
+#+end_src
+
+* navigation and search
+
+#+begin_src emacs-lisp
+(use-package ivy
+  :straight t
+  :bind (("s-b" . ivy-switch-buffer)
+         ("C-c C-r" . ivy-resume))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t
+        ivy-height 10
+        ivy-count-format "(%d/%d) ")
+  (define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done))
+
+(use-package ido-vertical-mode
+  :straight t
+  :config
+  (ido-vertical-mode 1)
+  (setq ido-use-faces t
+        ido-vertical-show-count t))
+
+(use-package counsel
+  :straight t
+  :after ivy
+  :bind (("C-x C-r" . counsel-recentf)
+         ("C-x C-f" . counsel-find-file)
+         ("M-x" . counsel-M-x))
+  :config
+  (setq counsel-rg-base-command "rg -i -w --no-heading --line-number %s ."
+        recentf-max-saved-items 50
+        recentf-auto-cleanup (* 24 60 60)))
+
+(use-package swiper
+  :straight t
+  :bind (("C-s" . swiper)
+         ("s-f" . swiper)))
+
+(use-package counsel-projectile
+  :straight t
+  :config
+  (counsel-projectile-mode))
+
+(use-package wgrep
+  :straight t)
+
+(use-package rg
+  :straight t
+  :config
+  (setq rg-command-line-flags '("-w"))
+  (setq rg-ignore-case 'smart))
+#+end_src
+
+* programming languages
+
+#+begin_src emacs-lisp
+;; clojure
+(use-package clojure-mode
+  :straight t
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)))
+
+(use-package clojure-mode-extra-font-locking
+  :straight t)
+
+(use-package cider
+  :straight t
+  :hook ((cider-mode . eldoc-mode)
+         (cider-repl-mode . paredit-mode)
+         (cider-repl-mode . company-mode)
+         (cider-repl-mode . (lambda ()
+                              (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
+         (cider-mode . company-mode)))
+
+(use-package clj-refactor
+  :straight t
+  :config
+  (setq cljr-warn-on-eval nil)
+  :hook
+  (clojure-mode . (lambda ()
+                    (clj-refactor-mode 1)
+                    (yas-minor-mode 1)
+                    (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
+;; go
+(use-package golint
+  :straight t)
+
+(defun custom-go-mode ()
+  (display-line-numbers-mode 1))
+
+(use-package go-mode
+  :straight t
+  :init
+  (setq compile-command "echo Building... && go build -v && echo Testing... && go test -v && echo Linter... && golint")
+  (setq compilation-read-command nil)
+  :hook ((go-mode . lsp-deferred)
+         (go-mode . custom-go-mode)
+         (go-mode . lsp-go-install-save-hooks)))
+
+;; rust
+(use-package rust-mode
+  :straight t
+  :hook ((rust-mode . flycheck-mode)
+         (rust-mode . lsp-deferred)
+         (rust-mode . smartparens-mode)
+         (rust-mode .
+                    (lambda ()
+                      (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))))
+
+(use-package cargo
+  :straight t
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package toml-mode
+  :straight t)
+
+;; python
+(use-package elpy
+  :straight t
+  :init
+  (elpy-enable)
+  :config
+  (define-key elpy-mode-map (kbd "M-<right>") nil)
+  (define-key elpy-mode-map (kbd "M-<left>") nil))
+
+(use-package anaconda-mode
+  :straight t
+  :init
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+
+(setq python-shell-completion-native-disabled-interpreters '("python"))
+(setq python-shell-interpreter "python3")
+
+(use-package pipenv
+  :straight t
+  :hook (python-mode . pipenv-mode)
+  :init
+  (setq
+   pipenv-projectile-after-switch-function
+   #'pipenv-projectile-after-switch-extended))
+
+;; haskell
+(use-package haskell-mode
+  :straight t
+  :init
+  (setq haskell-process-type 'stack-ghci)
+  :mode (("\\.hs\\'" . haskell-mode))
+  :interpreter ("haskell" . haskell-mode)
+  :config
+  (setq haskell-compile-cabal-build-command "stack build")
+  (setq haskell-process-log t)
+  :hook ((haskell-mode . lsp-deferred)
+         (haskell-mode . interactive-haskell-mode)))
+
+(use-package lsp-haskell
+  :straight t)
+
+(use-package dante
+  :straight t
+  :after haskell-mode
+  :commands 'dante-mode
+  :init
+  (add-hook 'haskell-mode-hook 'flycheck-mode)
+  (add-hook 'haskell-mode-hook 'dante-mode)
+  :config
+  (add-hook 'dante-mode-hook 'haskell-mode-setup))
+
+;; ruby
+(use-package rbenv
+  :straight t)
+
+(use-package enh-ruby-mode
+  :straight t
+  :mode (("\\.rb\\'" . enh-ruby-mode))
+  :interpreter ("ruby" . enh-ruby-mode))
+
+(use-package rubocop
+  :straight t)
+
+(use-package ruby-hash-syntax
+  :straight t)
+
+(use-package rubocopfmt
+  :straight t)
+
+(use-package inf-ruby
+  :straight t)
+
+(use-package rspec-mode
+  :straight t)
+
+(use-package robe
+  :straight t
+  :hook (ruby-mode . robe-mode))
+
+;; purescript
+(use-package purescript-mode
+  :straight t)
+
+(use-package psc-ide
+  :straight t)
+
+;; zig
+(use-package zig-mode
+  :straight t)
+
+;; kotlin
+(use-package kotlin-mode
+  :straight t
+  :hook ((kotlin-mode . lsp-deferred)
+         (kotlin-mode . flycheck-mode)
+         (kotlin-mode . company-mode)))
+
+;; java
+(use-package lsp-java
+  :straight t
+  :hook (java-mode . lsp-deferred))
+#+end_src
+
+* miscellanea
+
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :straight t
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "pandoc"))
+
+(use-package yaml-mode
+  :straight t)
+
+(use-package json-mode
+  :straight t)
+
+(use-package protobuf-mode
+  :straight t
+  :hook (protobuf-mode . flycheck-mode))
+
+(use-package dockerfile-mode
+  :straight t
+  :mode ("Dockerfile\\'" . dockerfile-mode))
+
+(use-package web-mode
+  :straight t
+  :mode (("\\.html?\\'" . web-mode)
+         ("\\.css\\'"   . web-mode)
+         ("\\.json\\'"  . web-mode))
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-css-indent-offset 2))
+
+;; latex and pdf support
+(use-package auctex
+  :straight t
+  :defer t
+  :custom
+  (TeX-auto-save t))
+
+(use-package pdf-tools
+  :straight t
+  :hook (pdf-view-mode . pdf-continuous-scroll-mode))
+
+(use-package company-auctex
+  :straight t)
+
+;; snippets and completion
+(use-package yasnippet
+  :straight t
+  :demand t
+  :config
+  (setq yas-verbosity 1 yas-wrap-around-region t)
+  (yas-reload-all)
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :straight t)
+
+(use-package auto-yasnippet
+  :straight t)
+
+;; additional utilities
+(use-package speed-type
+  :straight t)
+
+(use-package format-all
+  :straight t
+  :bind ("C-c SPC" . format-all-buffer))
+
+(use-package undo-tree
+  :straight t
+  :bind ("s-Z" . 'undo-tree-redo)
+  :config
+  (global-undo-tree-mode)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+
+(use-package mastodon
+  :straight t
+  :custom
+  (mastodon-instance-url "https://mastodon.social"))
+
+;; github Copilot
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)))
+
+;; performance monitoring
+(use-package esup
+  :straight t
+  :custom
+  (esup-depth 0))
+
+(provide 'init)
+#+end_src
