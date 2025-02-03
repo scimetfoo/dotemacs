@@ -131,6 +131,7 @@
      delete-selection-mode t
      pixel-scroll-precision-mode 1
      tool-bar-mode -1
+     pop-up-windows nil
      scroll-bar-mode -1
      ring-bell-function 'ignore
      blink-cursor-mode -1
