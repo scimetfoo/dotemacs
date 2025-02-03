@@ -127,16 +127,18 @@
      inhibit-startup-screen t
      initial-scratch-message nil
      sentence-end-double-space nil
+     scroll-conservatively 10000
+     delete-selection-mode t
+     pixel-scroll-precision-mode 1
+     tool-bar-mode -1
+     scroll-bar-mode -1
+     ring-bell-function 'ignore
+     blink-cursor-mode -1
      frame-title-format '((:eval (if (buffer-file-name)
                                      (abbreviate-file-name (buffer-file-name))
                                    "%b")))
      indent-tabs-mode nil
      tab-width 2)
-
-  ;; UI elements
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (blink-cursor-mode -1)
 
   ;; title bar appearance for macos
   (when (eq system-type 'darwin)
