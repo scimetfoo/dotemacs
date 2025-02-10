@@ -1,42 +1,3 @@
-* initialisation
-#+begin_src emacs-lisp
-;; garbage collection settings
-(setq gc-cons-threshold (* 50 1000 1000)  ;; 50MB during init
-      gc-cons-percentage 0.6
-      auto-window-vscroll nil
-      inhibit-compacting-font-caches t
-      read-process-output-max (* 1024 1024)) ;; 1mb
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 2 1000 1000)))) ;; 2MB post init
-
-;; package system setup
-(setq straight-use-package-by-default t)
-#+end_src
-
-* package management
-#+begin_src emacs-lisp
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'use-package)
-(require 'use-package)
-
-(use-package system-packages
-  :straight t)
-#+end_src
-
 * UI
 
 #+begin_src emacs-lisp
@@ -44,10 +5,10 @@
   ;; macos specific settings
   (when (eq system-type 'darwin)
     (setq mac-option-key-is-meta nil
-    mac-command-key-is-meta t
-    mac-command-modifier 'super
-    mac-option-modifier 'meta
-    ns-use-native-fullscreen t)
+          mac-command-key-is-meta t
+          mac-command-modifier 'super
+          mac-option-modifier 'meta
+          ns-use-native-fullscreen t)
 
     ;; title bar settings
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -57,89 +18,90 @@
     (global-set-key (kbd "s-<right>") (kbd "C-e"))
     (global-set-key (kbd "s-<left>") (kbd "M-m"))
     (global-set-key (kbd "s-<backspace>") 'kill-whole-line))
-    ;; shell environment
-    (use-package exec-path-from-shell
-      :straight t
-      :if (memq window-system '(mac ns))
-      :config
-      (setq exec-path-from-shell-check-startup-files nil)
-      (exec-path-from-shell-initialize))
+  ;; shell environment
+  (use-package exec-path-from-shell
+    :straight t
+    :if (memq window-system '(mac ns))
+    :config
+    (setq exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-initialize))
 
-    ;; theme
-    (use-package base16-theme
-      :straight t
-      :config
-      (load-theme 'base16-gruvbox-dark-hard t))
+  ;; theme
+  (use-package base16-theme
+    :straight t
+    :config
+    (load-theme 'base16-gruvbox-dark-hard t))
 
-    ;; modeline
-    (use-package doom-modeline
-      :straight t
-      :hook (after-init . doom-modeline-mode)
-      :init
-      (set-face-attribute 'mode-line nil :height 130)
-      (set-face-attribute 'mode-line-inactive nil :height 130)
-      :config
-      (setq doom-modeline-buffer-file-name-style 'relative-from-project
-      doom-modeline-icon (display-graphic-p)
-      doom-modeline-major-mode-color-icon t
-      doom-modeline-major-mode-icon t
-      doom-modeline-minor-modes nil
-      doom-modeline-github nil
-      doom-modeline-version nil
-      doom-modeline-height 10
-      doom-modeline-bar-width 1
-      doom-modeline-buffer-encoding nil
-      doom-modeline-vcs-max-length 50
-      doom-modeline-window-width-limit fill-column))
+  ;; modeline
+  (use-package doom-modeline
+    :straight t
+    :hook (after-init . doom-modeline-mode)
+    :init
+    (set-face-attribute 'mode-line nil :height 130)
+    (set-face-attribute 'mode-line-inactive nil :height 130)
+    :config
+    (setq doom-modeline-buffer-file-name-style 'relative-from-project
+          doom-modeline-icon (display-graphic-p)
+          doom-modeline-major-mode-color-icon t
+          doom-modeline-major-mode-icon t
+          doom-modeline-minor-modes nil
+          doom-modeline-github nil
+          doom-modeline-version nil
+          doom-modeline-height 10
+          doom-modeline-bar-width 1
+          doom-modeline-buffer-encoding nil
+          doom-modeline-vcs-max-length 50
+          doom-modeline-window-width-limit fill-column))
 
-    ;; window sizing
-    (use-package golden-ratio
-      :straight t
-      :diminish golden-ratio-mode
-      :init
-      (golden-ratio-mode 1))
+  ;; window sizing
+  (use-package golden-ratio
+    :straight t
+    :diminish golden-ratio-mode
+    :init
+    (golden-ratio-mode 1))
 
-    ;; command completion
-    (use-package which-key
-      :straight t
-      :init
-      (which-key-mode)
-      :config
-      (setq which-key-sort-order 'which-key-key-order-alpha
-      which-key-side-window-max-width 0.33
-      which-key-idle-delay 1.0)
-      :diminish which-key-mode)
+  ;; command completion
+  (use-package which-key
+    :straight t
+    :init
+    (which-key-mode)
+    :config
+    (setq which-key-sort-order 'which-key-key-order-alpha
+          which-key-side-window-max-width 0.33
+          which-key-idle-delay 1.0)
+    :diminish which-key-mode)
 
-    ;; Region expansion
-    (use-package expand-region
-      :straight t
-      :config
-      (global-set-key (kbd "C-;") 'er/expand-region))
+  ;; Region expansion
+  (use-package expand-region
+    :straight t
+    :config
+    (global-set-key (kbd "C-;") 'er/expand-region))
 
   ;; utf-8 everywhere
-    (prefer-coding-system 'utf-8)
-    (set-default-coding-systems 'utf-8)
-    (set-terminal-coding-system 'utf-8)
-    (set-keyboard-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
 
-    ;; basic UI settings
-    (setq-default
-     inhibit-startup-screen t
-     initial-scratch-message nil
-     sentence-end-double-space nil
-     scroll-conservatively 10000
-     delete-selection-mode t
-     pixel-scroll-precision-mode 1
-     tool-bar-mode -1
-     pop-up-windows nil
-     scroll-bar-mode -1
-     ring-bell-function 'ignore
-     blink-cursor-mode -1
-     frame-title-format '((:eval (if (buffer-file-name)
-                                     (abbreviate-file-name (buffer-file-name))
-                                   "%b")))
-     indent-tabs-mode nil
-     tab-width 2)
+  ;; basic UI settings
+  (tool-bar-mode -1)
+  (delete-selection-mode 1)
+  (pixel-scroll-precision-mode 1)
+  (scroll-bar-mode -1)
+  (blink-cursor-mode -1)
+
+  (setq-default
+   inhibit-startup-screen t
+   initial-scratch-message nil
+   sentence-end-double-space nil
+   scroll-conservatively 10000
+   pop-up-windows nil
+   ring-bell-function 'ignore
+   frame-title-format '((:eval (if (buffer-file-name)
+                                   (abbreviate-file-name (buffer-file-name))
+                                 "%b")))
+   indent-tabs-mode nil
+   tab-width 2)
 
   ;; title bar appearance for macos
   (when (eq system-type 'darwin)
