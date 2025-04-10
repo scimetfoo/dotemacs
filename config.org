@@ -116,82 +116,89 @@
 * dev tools
 
 #+begin_src emacs-lisp
-;; project management
-(use-package projectile
-  :straight t
-  :bind (:map projectile-mode-map
-              ("s-p" . projectile-command-map))
-  :init
-  (setq-default projectile-cache-file
-                (expand-file-name ".projectile-cache" user-emacs-directory))
-  (add-hook 'prog-mode-hook #'projectile-mode)
-  :config
-  (projectile-mode)
-  (setq projectile-completion-system 'ivy)
-  (setq-default projectile-enable-caching t
-                projectile-mode-line-prefix ""
-                projectile-sort-order 'recentf
-                projectile-mode-line '(:eval (projectile-project-name))))
+    ;; project management
+    (use-package projectile
+      :straight t
+      :bind (:map projectile-mode-map
+                  ("s-p" . projectile-command-map))
+      :init
+      (setq-default projectile-cache-file
+                    (expand-file-name ".projectile-cache" user-emacs-directory))
+      (add-hook 'prog-mode-hook #'projectile-mode)
+      :config
+      (projectile-mode)
+      (setq projectile-completion-system 'ivy)
+      (setq-default projectile-enable-caching t
+                    projectile-mode-line-prefix ""
+                    projectile-sort-order 'recentf
+                    projectile-mode-line '(:eval (projectile-project-name))))
 
-;; version control
-(use-package magit
-  :straight t
-  :bind ("C-x g" . magit-status)
-  :config
-  (setq magit-set-upstream-on-push 'askifnotset))
+    ;; version control
+    (use-package magit
+      :straight t
+      :bind ("C-x g" . magit-status)
+      :config
+      (setq magit-set-upstream-on-push 'askifnotset))
 
-;; completion framework
-(use-package company
-  :straight t
-  :hook (prog-mode . company-mode)
-  :config
-  (global-company-mode)
-  (setq company-tooltip-limit 10
-        company-idle-delay 0
-        company-echo-delay 0
-        company-minimum-prefix-length 2
-        company-require-match nil
-        company-selection-wrap-around t
-        company-tooltip-align-annotations t
-        company-tooltip-flip-when-above nil
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil
-        company-transformers '(company-sort-by-occurrence)))
+    ;; completion framework
+    (use-package company
+      :straight t
+      :hook (prog-mode . company-mode)
+      :config
+      (global-company-mode)
+      (setq company-tooltip-limit 10
+            company-idle-delay 0
+            company-echo-delay 0
+            company-minimum-prefix-length 2
+            company-require-match nil
+            company-selection-wrap-around t
+            company-tooltip-align-annotations t
+            company-tooltip-flip-when-above nil
+            company-dabbrev-ignore-case nil
+            company-dabbrev-downcase nil
+            company-transformers '(company-sort-by-occurrence)))
 
-;; lsp support
-(use-package lsp-mode
-  :straight t
-  :commands lsp
-  :hook ((clojure-mode . lsp-deferred)
-         (go-mode . lsp-deferred)
-         (python-mode . lsp-deferred)
-         (rust-mode . lsp-deferred)
-         (java-mode . lsp-deferred))
-  :config
-  (setq lsp-idle-delay 0.500
-        lsp-enable-symbol-highlighting nil
-        lsp-headerline-breadcrumb-enable nil
-        lsp-modeline-code-actions-enable nil
-        lsp-modeline-diagnostics-enable nil
-        lsp-completion-provider :capf))
+    ;; lsp support
+    (use-package lsp-mode
+      :straight t
+      :commands lsp
+      :init
+      (setq lsp-keymap-prefix "s-l")
+      :hook ((clojure-mode . lsp-deferred)
+             (go-mode . lsp-deferred)
+             (python-mode . lsp-deferred)
+             (rust-mode . lsp-deferred)
+             (java-mode . lsp-deferred))
+      :config
+      (setq lsp-idle-delay 0.500
+            lsp-enable-symbol-highlighting nil
+            lsp-headerline-breadcrumb-enable nil
+            lsp-modeline-code-actions-enable nil
+            lsp-modeline-diagnostics-enable nil
+            lsp-completion-provider :capf))
 
-(use-package lsp-ui
-  :straight t
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-doc-enable nil)
-  (lsp-ui-sideline-enable nil))
 
-;; parens
-(use-package smartparens
-  :straight t
-  :hook ((prog-mode markdown-mode) . smartparens-mode))
+    (use-package lsp-ui
+      :straight t
+      :commands lsp-ui-mode
+      :custom
+      (lsp-ui-doc-enable nil)
+      (lsp-ui-sideline-enable nil))
 
-(use-package paredit
-  :straight t
-  :hook ((clojure-mode . enable-paredit-mode)
-         (cider-repl-mode . enable-paredit-mode)
-         (emacs-lisp-mode . enable-paredit-mode)))
+    ;; parens
+    (use-package smartparens
+      :straight t
+      :hook ((prog-mode markdown-mode) . smartparens-mode))
+
+    (use-package paredit
+      :straight t
+      :hook ((clojure-mode . enable-paredit-mode)
+             (cider-repl-mode . enable-paredit-mode)
+             (emacs-lisp-mode . enable-paredit-mode)))
+
+    (use-package mermaid-mode
+      :ensure t
+      :mode ("\\.mmd\\'" . mermaid-mode))
 #+end_src
 
 * navigation and search
@@ -249,170 +256,178 @@
 * programming languages
 
 #+begin_src emacs-lisp
-;; clojure
-(use-package clojure-mode
-  :straight t
-  :hook ((clojure-mode . lsp-deferred)
-         (clojurec-mode . lsp-deferred)
-         (clojurescript-mode . lsp-deferred)))
+  ;; clojure
+  (use-package clojure-mode
+    :straight t
+    :hook ((clojure-mode . lsp-deferred)
+           (clojurec-mode . lsp-deferred)
+           (clojurescript-mode . lsp-deferred)))
 
-(use-package clojure-mode-extra-font-locking
-  :straight t)
+  (use-package clojure-mode-extra-font-locking
+    :straight t)
 
-(use-package cider
-  :straight t
-  :hook ((cider-mode . eldoc-mode)
-         (cider-repl-mode . paredit-mode)
-         (cider-repl-mode . company-mode)
-         (cider-repl-mode . (lambda ()
-                              (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
-         (cider-mode . company-mode)))
+  (use-package cider
+    :straight t
+    :hook ((cider-mode . eldoc-mode)
+           (cider-repl-mode . paredit-mode)
+           (cider-repl-mode . company-mode)
+           (cider-repl-mode . (lambda ()
+                                (local-set-key (kbd "C-l") 'cider-repl-clear-buffer)))
+           (cider-mode . company-mode)))
 
-(use-package clj-refactor
-  :straight t
-  :config
-  (setq cljr-warn-on-eval nil)
-  :hook
-  (clojure-mode . (lambda ()
-                    (clj-refactor-mode 1)
-                    (yas-minor-mode 1)
-                    (cljr-add-keybindings-with-prefix "C-c C-m"))))
+  (use-package clj-refactor
+    :straight t
+    :config
+    (setq cljr-warn-on-eval nil)
+    :hook
+    (clojure-mode . (lambda ()
+                      (clj-refactor-mode 1)
+                      (yas-minor-mode 1)
+                      (cljr-add-keybindings-with-prefix "C-c C-m"))))
 
-;; go
-(use-package golint
-  :straight t)
+  ;; go
+  (use-package golint
+    :straight t)
 
-(defun custom-go-mode ()
-  (display-line-numbers-mode 1))
+  (defun custom-go-mode ()
+    (display-line-numbers-mode 1))
 
-(use-package go-mode
-  :straight t
-  :init
-  (setq compile-command "echo Building... && go build -v && echo Testing... && go test -v && echo Linter... && golint")
-  (setq compilation-read-command nil)
-  :hook ((go-mode . lsp-deferred)
-         (go-mode . custom-go-mode)
-         (go-mode . lsp-go-install-save-hooks)))
+  (use-package go-mode
+    :straight t
+    :init
+    (setq compile-command "echo Building... && go build -v && echo Testing... && go test -v && echo Linter... && golint")
+    (setq compilation-read-command nil)
+    :hook ((go-mode . lsp-deferred)
+           (go-mode . custom-go-mode)
+           (go-mode . lsp-go-install-save-hooks)))
 
-;; rust
-(use-package rust-mode
-  :straight t
-  :hook ((rust-mode . flycheck-mode)
-         (rust-mode . lsp-deferred)
-         (rust-mode . smartparens-mode)
-         (rust-mode .
-                    (lambda ()
-                      (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))))
+  ;; rust
+  (use-package rust-mode
+    :straight t
+    :hook ((rust-mode . flycheck-mode)
+           (rust-mode . lsp-deferred)
+           (rust-mode . smartparens-mode)
+           (rust-mode .
+                      (lambda ()
+                        (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)))))
 
-(use-package cargo
-  :straight t
-  :hook (rust-mode . cargo-minor-mode))
+  (use-package cargo
+    :straight t
+    :hook (rust-mode . cargo-minor-mode))
 
-(use-package toml-mode
-  :straight t)
+  (use-package toml-mode
+    :straight t)
 
-;; python
-(use-package elpy
-  :straight t
-  :init
-  (elpy-enable)
-  :config
-  (define-key elpy-mode-map (kbd "M-<right>") nil)
-  (define-key elpy-mode-map (kbd "M-<left>") nil))
+  ;; python
+  (use-package elpy
+    :straight t
+    :init
+    (elpy-enable)
+    :config
+    (define-key elpy-mode-map (kbd "M-<right>") nil)
+    (define-key elpy-mode-map (kbd "M-<left>") nil))
 
-(use-package anaconda-mode
-  :straight t
-  :init
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+  (use-package anaconda-mode
+    :straight t
+    :init
+    (add-hook 'python-mode-hook 'anaconda-mode)
+    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 
-(setq python-shell-completion-native-disabled-interpreters '("python"))
-(setq python-shell-interpreter "python3")
+  (setq python-shell-completion-native-disabled-interpreters '("python"))
+  (setq python-shell-interpreter "python3")
 
-(use-package pipenv
-  :straight t
-  :hook (python-mode . pipenv-mode)
-  :init
-  (setq
-   pipenv-projectile-after-switch-function
-   #'pipenv-projectile-after-switch-extended))
+  (use-package lsp-pyright
+    :ensure t
+    :custom (lsp-pyright-langserver-command "basedpyright") 
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp))))
 
-;; haskell
-(use-package haskell-mode
-  :straight t
-  :init
-  (setq haskell-process-type 'stack-ghci)
-  :mode (("\\.hs\\'" . haskell-mode))
-  :interpreter ("haskell" . haskell-mode)
-  :config
-  (setq haskell-compile-cabal-build-command "stack build")
-  (setq haskell-process-log t)
-  :hook ((haskell-mode . lsp-deferred)
-         (haskell-mode . interactive-haskell-mode)))
 
-(use-package lsp-haskell
-  :straight t)
+  (use-package pipenv
+    :straight t
+    :hook (python-mode . pipenv-mode)
+    :init
+    (setq
+     pipenv-projectile-after-switch-function
+     #'pipenv-projectile-after-switch-extended))
 
-(use-package dante
-  :straight t
-  :after haskell-mode
-  :commands 'dante-mode
-  :init
-  (add-hook 'haskell-mode-hook 'flycheck-mode)
-  (add-hook 'haskell-mode-hook 'dante-mode)
-  :config
-  (add-hook 'dante-mode-hook 'haskell-mode-setup))
+  ;; haskell
+  (use-package haskell-mode
+    :straight t
+    :init
+    (setq haskell-process-type 'stack-ghci)
+    :mode (("\\.hs\\'" . haskell-mode))
+    :interpreter ("haskell" . haskell-mode)
+    :config
+    (setq haskell-compile-cabal-build-command "stack build")
+    (setq haskell-process-log t)
+    :hook ((haskell-mode . lsp-deferred)
+           (haskell-mode . interactive-haskell-mode)))
 
-;; ruby
-(use-package rbenv
-  :straight t)
+  (use-package lsp-haskell
+    :straight t)
 
-(use-package enh-ruby-mode
-  :straight t
-  :mode (("\\.rb\\'" . enh-ruby-mode))
-  :interpreter ("ruby" . enh-ruby-mode))
+  (use-package dante
+    :straight t
+    :after haskell-mode
+    :commands 'dante-mode
+    :init
+    (add-hook 'haskell-mode-hook 'flycheck-mode)
+    (add-hook 'haskell-mode-hook 'dante-mode)
+    :config
+    (add-hook 'dante-mode-hook 'haskell-mode-setup))
 
-(use-package rubocop
-  :straight t)
+  ;; ruby
+  (use-package rbenv
+    :straight t)
 
-(use-package ruby-hash-syntax
-  :straight t)
+  (use-package enh-ruby-mode
+    :straight t
+    :mode (("\\.rb\\'" . enh-ruby-mode))
+    :interpreter ("ruby" . enh-ruby-mode))
 
-(use-package rubocopfmt
-  :straight t)
+  (use-package rubocop
+    :straight t)
 
-(use-package inf-ruby
-  :straight t)
+  (use-package ruby-hash-syntax
+    :straight t)
 
-(use-package rspec-mode
-  :straight t)
+  (use-package rubocopfmt
+    :straight t)
 
-(use-package robe
-  :straight t
-  :hook (ruby-mode . robe-mode))
+  (use-package inf-ruby
+    :straight t)
 
-;; purescript
-(use-package purescript-mode
-  :straight t)
+  (use-package rspec-mode
+    :straight t)
 
-(use-package psc-ide
-  :straight t)
+  (use-package robe
+    :straight t
+    :hook (ruby-mode . robe-mode))
 
-;; zig
-(use-package zig-mode
-  :straight t)
+  ;; purescript
+  (use-package purescript-mode
+    :straight t)
 
-;; kotlin
-(use-package kotlin-mode
-  :straight t
-  :hook ((kotlin-mode . lsp-deferred)
-         (kotlin-mode . flycheck-mode)
-         (kotlin-mode . company-mode)))
+  (use-package psc-ide
+    :straight t)
 
-;; java
-(use-package lsp-java
-  :straight t
-  :hook (java-mode . lsp-deferred))
+  ;; zig
+  (use-package zig-mode
+    :straight t)
+
+  ;; kotlin
+  (use-package kotlin-mode
+    :straight t
+    :hook ((kotlin-mode . lsp-deferred)
+           (kotlin-mode . flycheck-mode)
+           (kotlin-mode . company-mode)))
+
+  ;; java
+  (use-package lsp-java
+    :straight t
+    :hook (java-mode . lsp-deferred))
 #+end_src
 
 * miscellanea
