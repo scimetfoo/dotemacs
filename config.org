@@ -103,11 +103,6 @@
    indent-tabs-mode nil
    tab-width 2)
 
-  ;; title bar appearance for macos
-  (when (eq system-type 'darwin)
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-    (add-to-list 'default-frame-alist '(ns-appearance . dark)))
-
   ;; shift between buffers using shift+arrow keys.
   (when (fboundp 'windmove-default-keybindings)
     (windmove-default-keybindings))
@@ -139,6 +134,13 @@
       :bind ("C-x g" . magit-status)
       :config
       (setq magit-set-upstream-on-push 'askifnotset))
+
+    ;; syntax checking
+    (use-package flycheck
+      :straight t
+      :hook (prog-mode . flycheck-mode)
+      :config
+      (setq flycheck-check-syntax-automatically '(save mode-enabled)))
 
     ;; completion framework
     (use-package company
@@ -199,6 +201,13 @@
     (use-package mermaid-mode
       :ensure t
       :mode ("\\.mmd\\'" . mermaid-mode))
+
+    (use-package aidermacs
+      :bind (("C-c a" . aidermacs-transient-menu))
+      :config
+      :custom
+      (aidermacs-use-architect-mode t)
+      (aidermacs-default-model "claude-sonnet-4-20250514"))
 #+end_src
 
 * navigation and search
@@ -214,13 +223,6 @@
         ivy-height 10
         ivy-count-format "(%d/%d) ")
   (define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done))
-
-(use-package ido-vertical-mode
-  :straight t
-  :config
-  (ido-vertical-mode 1)
-  (setq ido-use-faces t
-        ido-vertical-show-count t))
 
 (use-package counsel
   :straight t
@@ -318,24 +320,7 @@
   (use-package toml-mode
     :straight t)
 
-  ;; python
-  (use-package elpy
-    :straight t
-    :init
-    (elpy-enable)
-    :config
-    (define-key elpy-mode-map (kbd "M-<right>") nil)
-    (define-key elpy-mode-map (kbd "M-<left>") nil))
-
-  (use-package anaconda-mode
-    :straight t
-    :init
-    (add-hook 'python-mode-hook 'anaconda-mode)
-    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
-
-  (setq python-shell-completion-native-disabled-interpreters '("python"))
-  (setq python-shell-interpreter "python3")
-
+  ;; python - simplified setup using LSP
   (use-package lsp-pyright
     :ensure t
     :custom (lsp-pyright-langserver-command "basedpyright") 
@@ -343,6 +328,8 @@
                            (require 'lsp-pyright)
                            (lsp))))
 
+  (setq python-shell-completion-native-disabled-interpreters '("python"))
+  (setq python-shell-interpreter "python3")
 
   (use-package pipenv
     :straight t
@@ -433,99 +420,104 @@
 * miscellanea
 
 #+begin_src emacs-lisp
-(use-package markdown-mode
-  :straight t
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "pandoc"))
+  (use-package markdown-mode
+    :straight t
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "pandoc"))
 
-(use-package yaml-mode
-  :straight t)
+  (use-package yaml-mode
+    :straight t)
 
-(use-package json-mode
-  :straight t)
+  (use-package json-mode
+    :straight t)
 
-(use-package protobuf-mode
-  :straight t
-  :hook (protobuf-mode . flycheck-mode))
+  (use-package protobuf-mode
+    :straight t
+    :hook (protobuf-mode . flycheck-mode))
 
-(use-package dockerfile-mode
-  :straight t
-  :mode ("Dockerfile\\'" . dockerfile-mode))
+  (use-package dockerfile-mode
+    :straight t
+    :mode ("Dockerfile\\'" . dockerfile-mode))
 
-(use-package web-mode
-  :straight t
-  :mode (("\\.html?\\'" . web-mode)
-         ("\\.css\\'"   . web-mode)
-         ("\\.json\\'"  . web-mode))
-  :custom
-  (web-mode-markup-indent-offset 2)
-  (web-mode-code-indent-offset 2)
-  (web-mode-css-indent-offset 2))
+  (use-package web-mode
+    :straight t
+    :mode (("\\.html?\\'" . web-mode)
+           ("\\.css\\'"   . web-mode)
+           ("\\.json\\'"  . web-mode))
+    :custom
+    (web-mode-markup-indent-offset 2)
+    (web-mode-code-indent-offset 2)
+    (web-mode-css-indent-offset 2))
 
-;; latex and pdf support
-(use-package auctex
-  :straight t
-  :defer t
-  :custom
-  (TeX-auto-save t))
+  ;; latex and pdf support
+  (use-package auctex
+    :straight t
+    :defer t
+    :custom
+    (TeX-auto-save t)
+    :config
+    (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+          TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))))
 
-(use-package pdf-tools
-  :straight t
-  :hook (pdf-view-mode . pdf-continuous-scroll-mode))
+  (use-package pdf-tools
+    :straight t
+    :config
+    (pdf-tools-install)
+    :hook (pdf-view-mode . pdf-continuous-scroll-mode))
 
-(use-package company-auctex
-  :straight t)
+  (use-package company-auctex
+    :straight t)
 
-;; snippets and completion
-(use-package yasnippet
-  :straight t
-  :demand t
-  :config
-  (setq yas-verbosity 1 yas-wrap-around-region t)
-  (yas-reload-all)
-  (yas-global-mode 1))
+  ;; snippets and completion
+  (use-package yasnippet
+    :straight t
+    :demand t
+    :config
+    (setq yas-verbosity 1 yas-wrap-around-region t)
+    (yas-reload-all)
+    (yas-global-mode 1))
 
-(use-package yasnippet-snippets
-  :straight t)
+  (use-package yasnippet-snippets
+    :straight t)
 
-(use-package auto-yasnippet
-  :straight t)
+  (use-package auto-yasnippet
+    :straight t)
 
-;; additional utilities
-(use-package speed-type
-  :straight t)
+  ;; additional utilities
+  (use-package speed-type
+    :straight t)
 
-(use-package format-all
-  :straight t
-  :bind ("C-c SPC" . format-all-buffer))
+  (use-package format-all
+    :straight t
+    :bind ("C-c SPC" . format-all-buffer))
 
-(use-package undo-tree
-  :straight t
-  :bind ("s-Z" . 'undo-tree-redo)
-  :config
-  (global-undo-tree-mode)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+  (use-package undo-tree
+    :straight t
+    :bind ("s-Z" . 'undo-tree-redo)
+    :config
+    (global-undo-tree-mode)
+    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
-(use-package mastodon
-  :straight t
-  :custom
-  (mastodon-instance-url "https://mastodon.social"))
+  (use-package mastodon
+    :straight t
+    :custom
+    (mastodon-instance-url "https://mastodon.social"))
 
-;; github Copilot
-(use-package copilot
-  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)))
+  ;; github Copilot
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :hook (prog-mode . copilot-mode)
+    :bind (:map copilot-completion-map
+                ("<tab>" . copilot-accept-completion)
+                ("TAB" . copilot-accept-completion)))
 
-;; performance monitoring
-(use-package esup
-  :straight t
-  :custom
-  (esup-depth 0))
+  ;; performance monitoring
+  (use-package esup
+    :straight t
+    :custom
+    (esup-depth 0))
 
-(provide 'init)
+  (provide 'init)
 #+end_src
